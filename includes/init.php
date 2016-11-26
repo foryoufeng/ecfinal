@@ -83,12 +83,6 @@ require(ROOT_PATH . 'includes/lib_insert.php');
 require(ROOT_PATH . 'includes/lib_goods.php');
 require(ROOT_PATH . 'includes/lib_article.php');
 
-
-//by guan start
-require(ROOT_PATH . 'includes/cls_pinyin.php');
-require(ROOT_PATH . 'includes/lib_scws.php');
-//by guan end
-
 /* 对用户传入的变量进行转义操作。*/
 if (!get_magic_quotes_gpc())
 {
@@ -103,142 +97,6 @@ if (!get_magic_quotes_gpc())
 
     $_COOKIE   = addslashes_deep($_COOKIE);
     $_REQUEST  = addslashes_deep($_REQUEST);
-    CHANGE();
-}
-/*filter*/
-function filter_all($val,$k){
-    $filter=[
-        'select',
-        'from',
-        'ecs_',
-        'update',
-        'delete',
-        'insert',
-        '\''
-    ];
-
-    foreach($filter as $v){
-        if(false !==strpos(strtolower($val),$v)){
-            header('Location:/');
-        }
-    }
-
-}
-if (!empty($_GET))
-{
-    array_walk_recursive($_GET,'filter_all');
-}
-if (!empty($_POST))
-{
-    array_walk_recursive($_GET,'filter_all');
-}
-
-array_walk_recursive($_COOKIE,'filter_all');
-array_walk_recursive($_REQUEST,'filter_all');
-/***/
-function CHANGE($name, $default = '', $filter = null, $datas = null) {
-    if (strpos($name, '.')) { // 指定参数来源
-        list($method, $name) = explode('.', $name, 2);
-    } else { // 默认为自动判断
-        $method = 'param';
-    }
-    switch (strtolower($method)) {
-        case 'get':
-            $input = & $_GET;
-            break;
-        case 'post':
-            $input = & $_POST;
-            break;
-        case 'put':
-            parse_str(file_get_contents('php://input'), $input);
-            break;
-        case 'param':
-            switch ($_SERVER['REQUEST_METHOD']) {
-                case 'POST':
-                    $input = $_POST;
-                    break;
-                case 'PUT':
-                    parse_str(file_get_contents('php://input'), $input);
-                    break;
-                default:
-                    $input = $_GET;
-            }
-            break;
-        case 'path':
-            $input = array();
-            if (!empty($_SERVER['PATH_INFO'])) {
-                $depr = '/';
-                $input = explode($depr, trim($_SERVER['PATH_INFO'], $depr));
-            }
-            break;
-        case 'request':
-            $input = & $_REQUEST;
-            break;
-        case 'session':
-            $input = & $_SESSION;
-            break;
-        case 'cookie':
-            $input = & $_COOKIE;
-            break;
-        case 'server':
-            $input = & $_SERVER;
-            break;
-        case 'globals':
-            $input = & $GLOBALS;
-            break;
-        case 'data':
-            $input = & $datas;
-            break;
-        default:
-            return NULL;
-    }
-    if ('' == $name) { // 获取全部变量
-        $data = $input;
-        array_walk_recursive($data, 'filter_exp');
-        $filters = isset($filter) ? $filter : 'htmlspecialchars';
-        if ($filters) {
-            if (is_string($filters)) {
-                $filters = explode(',', $filters);
-            }
-            foreach ($filters as $filter) {
-                $data = array_MAP_recursive($filter, $data); // 参数过滤
-            }
-        }
-    } elseif (isset($input[$name])) { // 取值操作
-        $data = $input[$name];
-        is_array($data) && array_walk_recursive($data, 'filter_exp');
-        $filters = isset($filter) ? $filter : 'htmlspecialchars';
-        if ($filters) {
-            if (is_string($filters)) {
-                $filters = explode(',', $filters);
-            } elseif (is_int($filters)) {
-                $filters = array(
-                    $filters
-                );
-            }
-
-            foreach ($filters as $filter) {
-                if (function_exists($filter)) {
-                    $data = is_array($data) ? array_MAP_recursive($filter, $data) : $filter($data); // 参数过滤
-                } else {
-                    $data = filter_var($data, is_int($filter) ? $filter : filter_id($filter));
-                    if (false === $data) {
-                        return isset($default) ? $default : NULL;
-                    }
-                }
-            }
-        }
-    } else { // 变量默认值
-        $data = isset($default) ? $default : NULL;
-    }
-    return $data;
-}
-function array_MAP_recursive($filter, $data) {
-    $result = array();
-    foreach ($data as $key => $val) {
-        $result[$key] = is_array($val) ? array_MAP_recursive($filter, $val) : call_user_func($filter, $val);
-    }
-    return $result;
 }
 /* 创建 ECSHOP 对象 */
 $ecs = new ECS($db_name, $prefix);
@@ -449,21 +307,6 @@ if ((DEBUG_MODE & 4) == 4)
 	}
 	return $ip_address;
   }
-
-$ip_address=ip_address();
-$sql="select ip_address from ecs_ip_tables WHERE ip_address='".$ip_address."'";
-$row = $db->getAll($sql);
-if(count($row)>0){
-	header('HTTP/1.0 403 禁止访问');
-	echo '禁止访问';
-	exit;
-}
-
-  
-
-
-
-
 
 /*       结束       */
 
