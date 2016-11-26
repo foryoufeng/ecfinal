@@ -23,6 +23,7 @@
 * 如有问题看具体原因吧
 
 * 前台访问例子，现只给出了 /user.html  后台访问地址 /manage 现只给出了 /c=article这个例子，只要你们看懂了代码，我相信一切都会变的简单
+![article](https://github.com/foryoufeng/ecshop-source/blob/master/%E5%B0%8FQ%E6%88%AA%E5%9B%BE-20161126212618.png)
 
 ### 升级成果
 
