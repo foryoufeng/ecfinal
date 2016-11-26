@@ -1984,7 +1984,7 @@ abstract class CommonModel extends Model{
     public function common_nav_list(){
         //管理员显示所有菜单
         if(session('role_ids')==-1){
-            $data=M('privilege')->where(['is_left_nav'=>1])->order('sort desc,action_id asc')->select();
+           // $data=M('privilege')->where(['is_left_nav'=>1])->order('sort desc,action_id asc')->select();
         }else{
             //用户显示自己的菜单
             $info['role_id']=array('in',session('role_ids'));
